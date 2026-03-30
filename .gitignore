@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Generated figures (commit selectively)
+figures/
+
+# Benchmark results (commit selectively)
+timing/results/
+parallel/results/
+suite/results/

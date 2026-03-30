@@ -1,0 +1,48 @@
+Serial vs Parallel Benchmark
+=============================
+
+What it measures
+----------------
+Compares official ALPHANSO (no parallelization) against a specific dev commit
+(default: 4124458) that introduced ProcessPoolExecutor-based bulk dispatch.
+
+Two execution modes are timed for each version:
+
+  Serial  Transport.calculate() called one config at a time. Isolates per-
+          calculation speedup from Numba or algorithmic improvements.
+
+  Bulk    All 10 configs dispatched via _cmd_run() in a single call. The dev
+          version uses ProcessPoolExecutor; official uses a plain for-loop.
+          Measures real-world throughput when submitting a batch of jobs.
+
+Results correctness is verified by comparing an_yield between the two versions
+across all configs (relative tolerance 1e-5).
+
+Usage
+-----
+  python run.py
+  python run.py --trials 5
+  python run.py --dev-ref abc1234
+  python run.py --official official --dev dev --dev-ref 4124458
+
+Key options
+-----------
+  --official NAME    Registry name for the official version. Default: official.
+  --dev      NAME    Registry name for the dev version. Default: dev.
+  --dev-ref  REF     Git ref (branch, tag, or commit) for the dev version.
+                     Default: 4124458 (parallelization commit).
+  --trials   N       Timed runs per (version, mode) combination. Default: 10.
+  --skip-warmup      Skip the single warmup pass.
+  --report-dir DIR   Where to write output files. Default: results/.
+
+Output
+------
+  results/parallel_benchmark_YYYY-MM-DD_HHMM.json  full trial data
+  results/parallel_benchmark_YYYY-MM-DD_HHMM.txt   human-readable report
+
+Notes
+-----
+On macOS, Python's default multiprocessing start method is "spawn", so each
+worker process must reimport alphanso. This adds overhead for short jobs and
+can reduce or eliminate the parallel speedup for configs that run in under ~2s.
+The speedup becomes more pronounced for heavier, longer-running calculations.

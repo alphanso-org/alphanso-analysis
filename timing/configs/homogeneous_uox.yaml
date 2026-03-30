@@ -1,0 +1,7 @@
+name: "UOx Homogeneous"
+calc_type: "homogeneous"
+matdef:
+  # ZAID format: ZZZAAA (000 = natural abundances)
+  92235: 0.5    # U-235
+  92238: 0.35   # U-238
+  8000:  0.15   # natural oxygen

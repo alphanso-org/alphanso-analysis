@@ -1,0 +1,39 @@
+Test Suite Timing Benchmark
+============================
+
+What it measures
+----------------
+End-to-end wall time for the full pytest test suite (currently 45 tests) for
+each ALPHANSO version. Captures everything: pytest startup, imports, Numba JIT
+compilation on the first run, and all integration tests.
+
+This is the simplest way to compare overall performance between versions
+without designing custom configs. All versions must have a tests/ directory
+with a working pytest setup.
+
+Usage
+-----
+  python run.py
+  python run.py --trials 5
+  python run.py --versions dev official
+  python run.py --versions dev@main dev@feature-x --trials 3
+  python run.py --no-warmup --trials 2
+
+Key options
+-----------
+  --versions SPEC [...]   Versions to benchmark. Omit to use all from versions.yaml.
+  --trials   N            Timed runs per version. Default: 5.
+  --no-warmup             Skip the warmup run (first run includes JIT compile time).
+  --report-dir DIR        Where to write output files. Default: results/.
+
+Output
+------
+  results/suite_benchmark_YYYY-MM-DD_HHMM.json  timing data per version and trial
+  results/suite_benchmark_YYYY-MM-DD_HHMM.txt   human-readable report with speedup table
+
+Notes
+-----
+The warmup run is important for Numba-accelerated versions: the first run
+compiles JIT functions which adds several seconds. Subsequent runs are faster
+and reflect steady-state performance. With warmup enabled (default), the
+warmup run is not counted in the reported statistics.

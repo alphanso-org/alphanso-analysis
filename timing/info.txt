@@ -1,0 +1,57 @@
+Config Timing Benchmark
+=======================
+
+What it measures
+----------------
+Per-calculation wall time for Transport.calculate() across multiple ALPHANSO
+versions and a standard set of calculation configurations. Each (version,
+config) pair is run in an isolated subprocess so different installations
+never interfere. Two timing metrics are recorded:
+
+  calc_time  Time inside Transport.calculate() only. Excludes Python startup
+             and import overhead. This is the primary metric.
+
+  wall_time  Total subprocess wall time. Includes startup and import overhead.
+
+Results are saved as JSON and two plots are written to figures/:
+
+  timing_calc_time_YYYY-MM-DD.png      grouped bar chart, mean +- 1 std
+  timing_boxplot_calc_time_YYYY-MM-DD.png  box plots with individual trial points
+
+Usage
+-----
+  python run.py --list-versions
+  python run.py --trials 5 --plot
+  python run.py --versions dev official --trials 5 --plot
+  python run.py --versions dev@main dev@feature-x --trials 5 --plot
+  python run.py --versions dev@abc1234 --trials 3
+  python run.py --versions exp:../../alphanso-exp@branch --trials 5
+  python run.py --versions dev --configs beam_be9 homogeneous_pube --trials 3
+  python run.py --versions dev --configs configs/my_case.yaml --trials 5
+  python run.py --load results/2026-03-26_timing.json --plot
+
+Key options
+-----------
+  --versions SPEC [...]   Versions to benchmark. Omit to use all from versions.yaml.
+  --configs  CONFIG [...] Built-in config names or paths to YAML files.
+  --trials   N            Timed runs per (version, config) pair. Default: 5.
+  --warmup   N            Untimed warmup runs. Default: 1.
+  --plot                  Generate and save figures.
+  --metric   calc_time|wall_time  Metric for plots. Default: calc_time.
+  --load     FILE         Load saved results and skip running.
+
+Built-in configs
+----------------
+  beam_be9          Be-9 beam, 5 MeV
+  homogeneous_pube  Pu-Be homogeneous mixture
+  homogeneous_uox   UO2 homogeneous mixture
+  interface_pube    Pu-Be planar interface
+  sandwich_pube     Pu-Be sandwich with one C intermediate layer
+
+Custom configs can be added to configs/ as YAML files and passed by path.
+
+Output
+------
+  results/YYYY-MM-DD_timing.json   full trial data and stats per (version, config)
+  figures/timing_calc_time_YYYY-MM-DD.png
+  figures/timing_boxplot_calc_time_YYYY-MM-DD.png

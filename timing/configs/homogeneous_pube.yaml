@@ -1,0 +1,6 @@
+name: "Pu-Be Homogeneous"
+calc_type: "homogeneous"
+matdef:
+  Pu-239: 0.3
+  Pu-238: 0.2
+  Be-9: 0.5

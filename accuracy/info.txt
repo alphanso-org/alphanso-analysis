@@ -1,0 +1,16 @@
+Accuracy / Intercomparison Benchmarks
+======================================
+
+Planned tests
+-------------
+  vs_sources4c     Compare ALPHANSO yields and spectra against SOURCES-4C
+                   benchmark cases for beam, homogeneous, and sandwich geometries.
+
+  vs_vlaskin       Compare against experimental data from Vlaskin et al. for
+                   16 alpha-emitting elements.
+
+  vs_versions      Cross-check numerical agreement between ALPHANSO versions
+                   to catch regressions (an_yield, energy spectra, mean energy).
+
+This directory is a placeholder. Scripts will be added here as the
+intercomparison work progresses.

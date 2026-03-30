@@ -1,0 +1,7 @@
+name: "Pu-Be Interface"
+calc_type: "interface"
+source_matdef:
+  Pu-238: 1.0
+source_density: 19.8   # g/cm^3
+target_matdef:
+  Be-9: 1.0

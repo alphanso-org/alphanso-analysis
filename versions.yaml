@@ -1,0 +1,32 @@
+# ALPHANSO version registry
+# --------------------------
+# Register each ALPHANSO installation here.
+# Paths may be absolute or relative to this file (the repo root).
+#
+# Optional 'ref' pins a git branch, tag, or commit hash. The benchmark
+# tools create a temporary git worktree for that ref, leaving the original
+# working directory untouched.
+#
+# Version specifier syntax (on the CLI of any run.py):
+#   dev                       registered name, current checkout
+#   dev@main                  registered name, specific branch
+#   dev@abc1234               registered name, specific commit
+#   foo:../alphanso-foo       ad-hoc name:path
+#   foo:../alphanso-foo@v2    ad-hoc name:path with ref
+
+versions:
+  dev:
+    path: ../alphanso-dev
+    description: "Development version"
+
+  official:
+    path: ../alphanso-official/alphanso
+    description: "Official PyPI release"
+
+  archive:
+    path: ../alphanso-archive
+    description: "Archive / paper version"
+
+  stoch:
+    path: ../alphanso-stoch-transp
+    description: "Stochastic transport variant"
