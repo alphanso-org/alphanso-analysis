@@ -121,10 +121,18 @@ def find_sag4n_binary() -> Path:
 
 
 def find_venv_python() -> Path:
-    p = ROOT / "venv" / "bin" / "python"
+    explicit = os.environ.get("ALPHANSO_PYTHON")
+    if explicit:
+        p = Path(explicit)
+        if p.is_file():
+            return p
+        raise FileNotFoundError(f"ALPHANSO_PYTHON points to missing file: {p}")
+
+    venv_dir = os.environ.get("ALPHANSO_VENV")
+    p = Path(venv_dir) / "bin" / "python" if venv_dir else ROOT / "venv" / "bin" / "python"
     if not p.is_file():
         raise FileNotFoundError(
-            f"venv python not found at {p}. Run scripts/03_install_alphanso.sh first."
+            f"ALPHANSO venv python not found at {p}. Run scripts/03_install_alphanso.sh first."
         )
     return p
 

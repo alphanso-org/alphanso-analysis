@@ -18,6 +18,8 @@ cd "$(dirname "$0")/.."
 ROOT_DIR="$(pwd)"
 DATA_ROOT="$ROOT_DIR/nuclear_data"
 ENV_FILE="$ROOT_DIR/results/nuclear_data.env"
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/deps_mode.sh"
 
 # Default to the Mendoza Table 2 library, not SaG4n's newer hybrid default.
 LIB_KEY="${NUCLEAR_DATA_LIB:-jendl-an-2005}"
@@ -75,8 +77,12 @@ else
     if [[ "$magic" == 1f8b* ]]; then
         tar -xzf "$TARBALL" -C "$TMP_EXTRACT"
     elif [[ "$magic" == 504b* ]]; then
-        PY="$ROOT_DIR/conda_env/bin/python"
-        [[ -x "$PY" ]] || PY="python3"
+        if use_system_deps; then
+            PY="$(benchmark_python "$ROOT_DIR")"
+        else
+            PY="$ROOT_DIR/conda_env/bin/python"
+            [[ -x "$PY" ]] || PY="python3"
+        fi
         "$PY" -m zipfile -e "$TARBALL" "$TMP_EXTRACT"
     else
         echo "[04] ERROR: unknown archive format for $TARBALL" >&2

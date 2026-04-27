@@ -16,6 +16,8 @@ SAG4N_REF="${SAG4N_REF:-9bd52c2ec6f9e3c9720bd982aadbc22b339a7539}"
 BUILD_STAMP="$BUILD_DIR/.sag4n_commit"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/scripts/build_jobs.sh"
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/deps_mode.sh"
 
 if [[ -x "$BUILD_DIR/SaG4n" ]]; then
     echo "[02] SaG4n already built at $BUILD_DIR/SaG4n — verifying clean tree."
@@ -48,15 +50,25 @@ if [[ ! -x "$G4_INSTALL/bin/geant4-config" ]]; then
     exit 1
 fi
 
-# Activate conda env (compiler) and source GEANT4 env.
-for try in "$ROOT_DIR/miniconda" "$HOME/miniconda3" "$HOME/anaconda3"; do
-    if [[ -f "$try/etc/profile.d/conda.sh" ]]; then
-        # shellcheck disable=SC1091
-        source "$try/etc/profile.d/conda.sh"
-        conda activate "$ENV_DIR"
-        break
+if use_system_deps; then
+    echo "[02] USE_SYSTEM_DEPS=1: using system CMake/compiler/ROOT."
+    command -v cmake >/dev/null || { echo "[02] ERROR: cmake not on PATH." >&2; exit 1; }
+    command -v root-config >/dev/null || { echo "[02] ERROR: root-config not on PATH." >&2; exit 1; }
+else
+    # Activate conda env (compiler + ROOT) and source GEANT4 env.
+    if [[ ! -x "$ENV_DIR/bin/python" ]]; then
+        echo "[02] ERROR: conda env missing. Run scripts/00_install_conda_deps.sh first." >&2
+        exit 1
     fi
-done
+    for try in "$ROOT_DIR/miniconda" "$HOME/miniconda3" "$HOME/anaconda3"; do
+        if [[ -f "$try/etc/profile.d/conda.sh" ]]; then
+            # shellcheck disable=SC1091
+            source "$try/etc/profile.d/conda.sh"
+            conda activate "$ENV_DIR"
+            break
+        fi
+    done
+fi
 # shellcheck disable=SC1091
 source "$G4_INSTALL/bin/geant4.sh"
 

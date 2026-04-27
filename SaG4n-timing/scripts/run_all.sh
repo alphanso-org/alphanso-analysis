@@ -9,6 +9,8 @@ cd "$(dirname "$0")/.."
 ROOT_DIR="$(pwd)"
 mkdir -p "$ROOT_DIR/results"
 trap 'rm -f "$ROOT_DIR/results/run.pid"' EXIT
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/deps_mode.sh"
 
 STEPS=(
     "00_install_conda_deps.sh"
@@ -28,7 +30,11 @@ run_step() {
         echo
         echo "ERROR: $step failed."
         echo "Re-run just this step with:"
-        echo "  $ROOT_DIR/scripts/$step"
+        if use_system_deps; then
+            echo "  USE_SYSTEM_DEPS=1 $ROOT_DIR/scripts/$step"
+        else
+            echo "  $ROOT_DIR/scripts/$step"
+        fi
         echo "Steps are idempotent — partial state is preserved."
         exit 1
     fi
@@ -42,9 +48,7 @@ echo
 echo "============================================================"
 echo "== STEP 05_run_benchmark.py"
 echo "============================================================"
-PY="$ROOT_DIR/conda_env/bin/python"
-[[ -x "$PY" ]] || PY="$ROOT_DIR/venv/bin/python"
-[[ -x "$PY" ]] || PY="python3"
+PY="$(benchmark_python "$ROOT_DIR")"
 "$PY" "$ROOT_DIR/scripts/05_run_benchmark.py" "$@"
 
 echo

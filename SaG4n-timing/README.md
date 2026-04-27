@@ -12,6 +12,13 @@ One-shot detached run on CELA:
 ./scripts/status.sh
 ```
 
+If CELA already has the build stack available, skip conda and use system
+tools:
+
+```sh
+USE_SYSTEM_DEPS=1 ./run.sh
+```
+
 GEANT4 and SaG4n compilation are capped to 20% of visible CPUs by default
 (`floor(nproc/5)`, minimum 1). Set `BUILD_JOBS=<lower-number>` before
 `./run.sh` if you need to be more conservative.

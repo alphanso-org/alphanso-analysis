@@ -7,28 +7,41 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT_DIR="$(pwd)"
 ENV_DIR="$ROOT_DIR/conda_env"
-VENV_DIR="$ROOT_DIR/venv"
+VENV_DIR="${ALPHANSO_VENV:-$ROOT_DIR/venv}"
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/deps_mode.sh"
 
-if [[ -x "$VENV_DIR/bin/python" ]] && "$VENV_DIR/bin/python" -c "import alphanso" 2>/dev/null; then
-    echo "[03] ALPHANSO already installed in $VENV_DIR — skipping."
+has_python_deps() {
+    "$VENV_DIR/bin/python" -c "import alphanso, jinja2, numpy, matplotlib" >/dev/null 2>&1
+}
+
+if [[ -x "$VENV_DIR/bin/python" ]] && has_python_deps; then
+    echo "[03] ALPHANSO and benchmark Python deps already installed in $VENV_DIR — skipping."
     "$VENV_DIR/bin/pip" show alphanso | grep -E '^(Name|Version|Location):' || true
     exit 0
 fi
 
-if [[ ! -x "$ENV_DIR/bin/python" ]]; then
+if ! use_system_deps && [[ ! -x "$ENV_DIR/bin/python" ]]; then
     echo "[03] ERROR: conda env missing. Run scripts/00_install_conda_deps.sh first." >&2
     exit 1
 fi
 
-if [[ ! -d "$VENV_DIR" ]]; then
+if [[ ! -x "$VENV_DIR/bin/python" ]]; then
     echo "[03] Creating venv at $VENV_DIR ..."
-    "$ENV_DIR/bin/python" -m venv "$VENV_DIR"
+    if use_system_deps; then
+        "${PYTHON_FOR_VENV:-python3}" -m venv "$VENV_DIR"
+    else
+        "$ENV_DIR/bin/python" -m venv "$VENV_DIR"
+    fi
 fi
 
 "$VENV_DIR/bin/pip" install --upgrade pip wheel setuptools
+"$VENV_DIR/bin/pip" install jinja2 numpy matplotlib
 
 INSTALL_TARGET="${ALPHANSO_INSTALL:-alphanso}"
-if [[ "$INSTALL_TARGET" != "alphanso" && -d "$INSTALL_TARGET" ]]; then
+if "$VENV_DIR/bin/python" -c "import alphanso" >/dev/null 2>&1; then
+    echo "[03] ALPHANSO already importable from $VENV_DIR."
+elif [[ "$INSTALL_TARGET" != "alphanso" && -d "$INSTALL_TARGET" ]]; then
     echo "[03] Installing ALPHANSO from local path: $INSTALL_TARGET (editable)"
     "$VENV_DIR/bin/pip" install -e "$INSTALL_TARGET"
 else
@@ -37,7 +50,7 @@ else
 fi
 
 # Sanity check.
-"$VENV_DIR/bin/python" -c "from alphanso.transport import Transport; print('[03] alphanso import OK')"
+"$VENV_DIR/bin/python" -c "import jinja2, numpy, matplotlib; from alphanso.transport import Transport; print('[03] Python deps import OK')"
 
 mkdir -p "$ROOT_DIR/results"
 "$VENV_DIR/bin/pip" freeze > "$ROOT_DIR/results/pip_freeze.txt"

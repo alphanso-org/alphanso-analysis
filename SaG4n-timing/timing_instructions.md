@@ -10,6 +10,19 @@ wall: roughly 3–5 hours of installs + ~2 hours of benchmarking.
 git clone <this-repo> && cd <this-repo>/SaG4n-timing && ./run.sh
 ```
 
+If CELA already has CMake, a C++ compiler, ROOT, and Python available, try the
+no-conda path first:
+
+```
+USE_SYSTEM_DEPS=1 ./run.sh
+```
+
+To reuse an existing ALPHANSO venv:
+
+```
+USE_SYSTEM_DEPS=1 ALPHANSO_VENV=/path/to/venv ./run.sh
+```
+
 `./run.sh` starts the full benchmark with `nohup` in a new session and returns
 immediately. It is safe to close the SSH connection. Check progress with:
 
@@ -31,12 +44,14 @@ Final outputs land in:
 
 ## Prerequisites on the lab box
 
-- Linux x86_64 (the `gcc_linux-64` conda toolchain assumes this).
+- Linux x86_64.
 - Internet access (for cloning SaG4n + downloading GEANT4 source + JENDL).
-- ~10 GB free disk: ~3 GB GEANT4 data, ~3 GB GEANT4 build, ~1 GB conda env,
-  ~1 GB SaG4n build + nuclear data, headroom.
+- ~10 GB free disk: ~3 GB GEANT4 data, ~3 GB GEANT4 build, optionally ~1 GB
+  conda env, ~1 GB SaG4n build + nuclear data, headroom.
 - Either an existing miniconda/anaconda install in `~`, or just internet
   access (the script bootstraps Miniconda into `./miniconda/` if absent).
+- For `USE_SYSTEM_DEPS=1`: `cmake`, `make`, `g++`, `git`, `wget`, `tar`,
+  `root-config`, and `python3 -m venv` must already work in your shell.
 - **No sudo required.** If something asks for it, that's a bug — file it.
 - Build parallelism is capped to 20% of visible CPUs by default
   (`floor(nproc/5)`, minimum 1). To be even more conservative, set
@@ -46,7 +61,7 @@ Final outputs land in:
 
 | # | Script | Purpose | Wall |
 |---|---|---|---|
-| 0 | `scripts/00_install_conda_deps.sh` | conda env @ `./conda_env/` (cmake, gcc, xerces-c, ROOT, python) | ~10 min |
+| 0 | `scripts/00_install_conda_deps.sh` | conda env @ `./conda_env/`, or system-dependency check when `USE_SYSTEM_DEPS=1` | ~10 min or <1 min |
 | 1 | `scripts/01_install_geant4.sh` | GEANT4 11.2.1 source build to `./geant4_install/` using at most 20% of CPUs | 30–60 min |
 | 2 | `scripts/02_build_sag4n.sh` | clone github.com/UIN-CIEMAT/SaG4n, build using at most 20% of CPUs, refuse if dirty | ~5 min |
 | 3 | `scripts/03_install_alphanso.sh` | venv + `pip install alphanso` | ~2 min |
@@ -74,10 +89,29 @@ rm -rf results/raw/       # discard timing data
 `./miniconda/`. If you'd rather use an existing env, point the script's
 `CONDA` lookup at it (it checks `~/miniconda3`, `~/miniconda`, `~/anaconda3`).
 
+**Conda Python fails with `No module named encodings`.** This is usually a
+corrupt partial Miniconda install or inherited `PYTHONHOME`/`PYTHONPATH`.
+The script now sanitizes those variables for conda creation, but if you
+already have system build tools, prefer:
+`USE_SYSTEM_DEPS=1 ./run.sh`.
+
+**Using system dependencies instead of conda.** Run
+`USE_SYSTEM_DEPS=1 ./run.sh`. Step 00 will check for `cmake`, `make`, `g++`,
+`git`, `wget`, `tar`, `root-config`, and `python3 -m venv`. If it fails, load
+the relevant CELA modules and rerun the same command.
+
+**Using an existing ALPHANSO venv.** Run
+`USE_SYSTEM_DEPS=1 ALPHANSO_VENV=/path/to/venv ./run.sh`. Step 03 will reuse
+that venv and install any missing benchmark helper packages (`jinja2`, `numpy`,
+`matplotlib`) if needed.
+
 **GEANT4 build fails on missing xerces-c / expat.** Make sure the conda env
 is active before re-running step 01. The script tries to source it, but
 some shells require manual activation first:
 `source ./conda_env/etc/profile.d/conda.sh && conda activate ./conda_env`.
+When using `USE_SYSTEM_DEPS=1`, this means the system/module environment does
+not expose the needed development headers/libraries; load the relevant module
+or fall back to the conda path.
 
 **GEANT4 download fails.** The script tries the CERN GitLab archive first
 and falls back to GitHub releases. If both fail, manually download
@@ -107,8 +141,9 @@ want a different library. If CERNBox blocks wget, the script tells you which
 file to save under `nuclear_data/<lib>.tar.gz` from a browser before re-run.
 
 **`pip install alphanso` fails with Python version mismatch.** The conda
-env ships Python 3.11. If ALPHANSO requires something else, edit
-`scripts/00_install_conda_deps.sh` and pin the Python version.
+path ships Python 3.11. With `USE_SYSTEM_DEPS=1`, step 03 uses
+`${PYTHON_FOR_VENV:-python3}` to create the venv. Point `PYTHON_FOR_VENV` at a
+different interpreter if your system default is wrong.
 
 **Faithfulness fails for ¹⁴N.** Mendoza documents up to 12% step-size
 deviation for ¹⁴N. The reference data widens that nuclide's tolerance to

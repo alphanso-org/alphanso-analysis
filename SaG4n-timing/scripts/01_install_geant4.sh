@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 01_install_geant4.sh — download and build GEANT4 against the conda toolchain.
+# 01_install_geant4.sh — download and build GEANT4 against conda or system deps.
 # Single-threaded build flag (GEANT4_BUILD_MULTITHREADED=OFF) for deterministic
 # timing. Idempotent: skips if geant4_install/bin/geant4-config already exists.
 
@@ -12,13 +12,15 @@ INSTALL_DIR="$ROOT_DIR/geant4_install"
 SRC_DIR="$ROOT_DIR/geant4_src"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/scripts/build_jobs.sh"
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/deps_mode.sh"
 
 if [[ -x "$INSTALL_DIR/bin/geant4-config" ]]; then
     echo "[01] GEANT4 already installed at $INSTALL_DIR — skipping."
     exit 0
 fi
 
-if [[ ! -x "$ENV_DIR/bin/cmake" ]]; then
+if ! use_system_deps && [[ ! -x "$ENV_DIR/bin/cmake" ]]; then
     echo "[01] ERROR: conda env missing. Run scripts/00_install_conda_deps.sh first." >&2
     exit 1
 fi
@@ -26,24 +28,24 @@ fi
 VERSION="$(cat "$ROOT_DIR/scripts/geant4_version.txt" | tr -d '[:space:]')"
 echo "[01] Installing GEANT4 v$VERSION"
 
-# Activate conda env to get the gcc_linux-64 toolchain wrappers (CC, CXX) and
-# pick up xerces-c / expat / zlib headers from the env.
-# shellcheck disable=SC1091
-source "$(dirname "$(readlink -f "$ENV_DIR/bin/conda" 2>/dev/null || echo "$ENV_DIR/bin/python")")/../etc/profile.d/conda.sh" 2>/dev/null || true
-# Robust activation: locate the conda installation that owns this env.
-CONDA_ROOT="$(dirname "$(dirname "$(readlink -f "$ENV_DIR/bin/python")")")"
-# If that didn't yield a sane root with a profile.d/conda.sh, walk back.
-for try in "$ENV_DIR" "$ROOT_DIR/miniconda" "$HOME/miniconda3" "$HOME/anaconda3"; do
-    if [[ -f "$try/etc/profile.d/conda.sh" ]]; then
-        # shellcheck disable=SC1091
-        source "$try/etc/profile.d/conda.sh"
-        conda activate "$ENV_DIR"
-        break
-    fi
-done
+if use_system_deps; then
+    echo "[01] USE_SYSTEM_DEPS=1: using system CMake/compiler/libraries."
+else
+    # Activate conda env to get compiler wrappers and dependency headers.
+    # shellcheck disable=SC1091
+    source "$(dirname "$(readlink -f "$ENV_DIR/bin/conda" 2>/dev/null || echo "$ENV_DIR/bin/python")")/../etc/profile.d/conda.sh" 2>/dev/null || true
+    for try in "$ENV_DIR" "$ROOT_DIR/miniconda" "$HOME/miniconda3" "$HOME/anaconda3"; do
+        if [[ -f "$try/etc/profile.d/conda.sh" ]]; then
+            # shellcheck disable=SC1091
+            source "$try/etc/profile.d/conda.sh"
+            conda activate "$ENV_DIR"
+            break
+        fi
+    done
+fi
 
-# Sanity: cmake and a C++ compiler must now be on PATH from the conda env.
-command -v cmake >/dev/null || { echo "[01] ERROR: cmake not on PATH after activation." >&2; exit 1; }
+# Sanity: cmake and a C++ compiler must now be on PATH.
+command -v cmake >/dev/null || { echo "[01] ERROR: cmake not on PATH." >&2; exit 1; }
 command -v "${CXX:-x86_64-conda-linux-gnu-g++}" >/dev/null || \
     command -v g++ >/dev/null || \
     { echo "[01] ERROR: no C++ compiler on PATH." >&2; exit 1; }
@@ -77,14 +79,18 @@ mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
 echo "[01] Running cmake ..."
-cmake -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
-      -DCMAKE_PREFIX_PATH="$ENV_DIR" \
-      -DGEANT4_INSTALL_DATA=ON \
-      -DGEANT4_USE_SYSTEM_EXPAT=ON \
-      -DGEANT4_USE_GDML=ON \
-      -DGEANT4_BUILD_MULTITHREADED=OFF \
-      -DCMAKE_BUILD_TYPE=Release \
-      "$SRC_DIR/geant4-v${VERSION}"
+cmake_args=(
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+    -DGEANT4_INSTALL_DATA=ON
+    -DGEANT4_USE_SYSTEM_EXPAT=ON
+    -DGEANT4_USE_GDML=ON
+    -DGEANT4_BUILD_MULTITHREADED=OFF
+    -DCMAKE_BUILD_TYPE=Release
+)
+if ! use_system_deps; then
+    cmake_args+=(-DCMAKE_PREFIX_PATH="$ENV_DIR")
+fi
+cmake "${cmake_args[@]}" "$SRC_DIR/geant4-v${VERSION}"
 
 BUILD_JOBS_RESOLVED="$(resolve_build_jobs)"
 CPU_COUNT="$(detect_cpu_count)"

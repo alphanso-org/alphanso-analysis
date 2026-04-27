@@ -9,6 +9,32 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT_DIR="$(pwd)"
 ENV_DIR="$ROOT_DIR/conda_env"
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/deps_mode.sh"
+
+if use_system_deps; then
+    echo "[00] USE_SYSTEM_DEPS=1: skipping conda bootstrap; checking system tools."
+    missing=()
+    for cmd in cmake make git wget tar python3; do
+        command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
+    done
+    command -v "${CXX:-g++}" >/dev/null 2>&1 || missing+=("${CXX:-g++}")
+    command -v root-config >/dev/null 2>&1 || missing+=("root-config (ROOT)")
+    python3 -c "import venv" >/dev/null 2>&1 || missing+=("python3 venv module")
+
+    if (( ${#missing[@]} > 0 )); then
+        echo "[00] ERROR: missing system dependencies:" >&2
+        printf '[00]   %s\n' "${missing[@]}" >&2
+        echo "[00] Load the needed CELA modules, or unset USE_SYSTEM_DEPS and use conda." >&2
+        exit 1
+    fi
+
+    echo "[00] System dependency check passed."
+    cmake --version | head -1
+    "${CXX:-g++}" --version | head -1
+    root-config --version | sed 's/^/[00] ROOT /'
+    exit 0
+fi
 
 if [[ -x "$ENV_DIR/bin/cmake" ]]; then
     echo "[00] conda env already provisioned at $ENV_DIR — skipping."
@@ -38,7 +64,7 @@ fi
 echo "[00] Using conda at: $CONDA"
 
 # Create the env. -p puts it inline at ./conda_env/ (no global env name pollution).
-"$CONDA" create -y -p "$ENV_DIR" -c conda-forge \
+env -u PYTHONHOME -u PYTHONPATH "$CONDA" create -y -p "$ENV_DIR" -c conda-forge \
     cmake=3.27 \
     make \
     gcc_linux-64=12 \
