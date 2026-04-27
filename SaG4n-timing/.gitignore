@@ -10,7 +10,6 @@ nuclear_data/
 # Generated inputs and runtime outputs
 results/nuclear_data.env
 results/run.pid
-results/runlogs/
 
 
 # Local source PDF; reference values are transcribed in docs/
