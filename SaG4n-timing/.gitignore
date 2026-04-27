@@ -11,7 +11,6 @@ nuclear_data/
 inputs/generated/
 results/raw/
 results/versions.json
-results/timings.json
 results/faithfulness.json
 results/pip_freeze.txt
 results/nuclear_data.env
