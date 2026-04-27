@@ -1,0 +1,10 @@
+{
+  "engine": "alphanso",
+  "nuclide": "C-13",
+  "trial": 9,
+  "calc_ns": 71867080,
+  "calc_s": 0.07186708,
+  "wall_ns": 723204283,
+  "wall_s": 0.723204283,
+  "an_yield": 0.00010612937666387366
+}

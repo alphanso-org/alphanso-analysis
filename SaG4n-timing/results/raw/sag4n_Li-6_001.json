@@ -1,0 +1,12 @@
+{
+  "engine": "sag4n",
+  "nuclide": "Li-6",
+  "trial": 1,
+  "wall_ns": 220427871732,
+  "wall_s": 220.427871732,
+  "y_us": 22.206799999999998,
+  "log_path": "/home/nelson254/alphanso-analysis/SaG4n-timing/results/raw/sag4n_Li-6_t1.log",
+  "txt_path": "/home/nelson254/alphanso-analysis/SaG4n-timing/results/raw/sag4n_Li-6_t1.txt",
+  "input_path": "/home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/Li-6_t1.inp",
+  "binary": "/home/nelson254/alphanso-analysis/SaG4n-timing/SaG4n_src/build/SaG4n"
+}

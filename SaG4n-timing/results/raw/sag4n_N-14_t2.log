@@ -1,0 +1,35 @@
+# cmd: taskset -c 0 /home/nelson254/alphanso-analysis/SaG4n-timing/SaG4n_src/build/SaG4n /home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/N-14_t2.inp
+# returncode: 0
+# wall_ns: 235828756785
+# === STDOUT (last 80 lines) ===
+
+**************************************************************
+ Geant4 version Name: geant4-11-02-patch-01    (16-February-2024)
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+
+***** Table : Nb of materials = 1 *****
+
+ Material:     N-14    density:  1.000 g/cm3   RadL:  37.978 cm   Nucl.Int.Length:  84.361 cm 
+                       Imean:  82.000 eV   temperature: 293.00 K  pressure:   1.00 atm
+
+   --->  Element: Z_7 (Z_7)   Z =  7.0   N =    14   A = 14.003 g/mole
+         --->  Isotope: iso_7014   Z =  7   N =  14   A =  14.00 g/mole   abundance: 100.000 %
+          ElmMassFraction: 100.00 %  ElmAbundance 100.00 % 
+
+
+
+Checking overlaps for volume Sample:1 (G4Box) ... OK! 
+ Attaching biasing operator to logical volume Sample with biasFactor = 1000 in alpha
+ #### PROGRESS: 2605761/10000000 run histories have been computed (26.0576 %) in 1.01667 minutes (0.0169444 h) ---> (1.53783e+08 run histories/h) ####
+ #### Estimated time left to complete the job (/home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/N-14_t2.inp): 2.88494 minutes (0.0480824 h) ####
+ #### PROGRESS: 5158304/10000000 run histories have been computed (51.583 %) in 2.01667 minutes (0.0336111 h) ---> (1.5347e+08 run histories/h) ####
+ #### Estimated time left to complete the job (/home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/N-14_t2.inp): 1.89289 minutes (0.0315481 h) ####
+ Job with input /home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/N-14_t2.inp finished successfully after 236 seconds
+# === STDERR ===
+

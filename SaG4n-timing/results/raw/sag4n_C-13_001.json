@@ -1,0 +1,12 @@
+{
+  "engine": "sag4n",
+  "nuclide": "C-13",
+  "trial": 1,
+  "wall_ns": 317698872427,
+  "wall_s": 317.698872427,
+  "y_us": 107.819,
+  "log_path": "/home/nelson254/alphanso-analysis/SaG4n-timing/results/raw/sag4n_C-13_t1.log",
+  "txt_path": "/home/nelson254/alphanso-analysis/SaG4n-timing/results/raw/sag4n_C-13_t1.txt",
+  "input_path": "/home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/C-13_t1.inp",
+  "binary": "/home/nelson254/alphanso-analysis/SaG4n-timing/SaG4n_src/build/SaG4n"
+}

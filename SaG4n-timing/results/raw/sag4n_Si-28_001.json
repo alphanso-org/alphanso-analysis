@@ -1,0 +1,12 @@
+{
+  "engine": "sag4n",
+  "nuclide": "Si-28",
+  "trial": 1,
+  "wall_ns": 224150665321,
+  "wall_s": 224.150665321,
+  "y_us": 0.132712,
+  "log_path": "/home/nelson254/alphanso-analysis/SaG4n-timing/results/raw/sag4n_Si-28_t1.log",
+  "txt_path": "/home/nelson254/alphanso-analysis/SaG4n-timing/results/raw/sag4n_Si-28_t1.txt",
+  "input_path": "/home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/Si-28_t1.inp",
+  "binary": "/home/nelson254/alphanso-analysis/SaG4n-timing/SaG4n_src/build/SaG4n"
+}

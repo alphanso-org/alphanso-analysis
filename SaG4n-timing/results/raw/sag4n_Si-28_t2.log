@@ -1,0 +1,35 @@
+# cmd: taskset -c 0 /home/nelson254/alphanso-analysis/SaG4n-timing/SaG4n_src/build/SaG4n /home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/Si-28_t2.inp
+# returncode: 0
+# wall_ns: 225272680091
+# === STDOUT (last 80 lines) ===
+
+**************************************************************
+ Geant4 version Name: geant4-11-02-patch-01    (16-February-2024)
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+
+***** Table : Nb of materials = 1 *****
+
+ Material:    Si-28    density:  1.000 g/cm3   RadL:  21.739 cm   Nucl.Int.Length:   1.063 m  
+                       Imean: 173.000 eV   temperature: 293.00 K  pressure:   1.00 atm
+
+   --->  Element: Z_14 (Z_14)   Z = 14.0   N =    28   A = 27.977 g/mole
+         --->  Isotope: iso_14028   Z = 14   N =  28   A =  27.98 g/mole   abundance: 100.000 %
+          ElmMassFraction: 100.00 %  ElmAbundance 100.00 % 
+
+
+
+Checking overlaps for volume Sample:1 (G4Box) ... OK! 
+ Attaching biasing operator to logical volume Sample with biasFactor = 1000 in alpha
+ #### PROGRESS: 2724273/10000000 run histories have been computed (27.2427 %) in 1.01667 minutes (0.0169444 h) ---> (1.60777e+08 run histories/h) ####
+ #### Estimated time left to complete the job (/home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/Si-28_t2.inp): 2.71522 minutes (0.0452536 h) ####
+ #### PROGRESS: 5412156/10000000 run histories have been computed (54.1216 %) in 2.01667 minutes (0.0336111 h) ---> (1.61023e+08 run histories/h) ####
+ #### Estimated time left to complete the job (/home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/Si-28_t2.inp): 1.70951 minutes (0.0284919 h) ####
+ Job with input /home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/Si-28_t2.inp finished successfully after 225 seconds
+# === STDERR ===
+

@@ -1,0 +1,37 @@
+# cmd: taskset -c 0 /home/nelson254/alphanso-analysis/SaG4n-timing/SaG4n_src/build/SaG4n /home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/F-19_t1.inp
+# returncode: 0
+# wall_ns: 333609312492
+# === STDOUT (last 80 lines) ===
+
+**************************************************************
+ Geant4 version Name: geant4-11-02-patch-01    (16-February-2024)
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+
+***** Table : Nb of materials = 1 *****
+
+ Material:     F-19    density:  1.000 g/cm3   RadL:  32.930 cm   Nucl.Int.Length:  93.391 cm 
+                       Imean: 115.000 eV   temperature: 293.00 K  pressure:   1.00 atm
+
+   --->  Element: Z_9 (Z_9)   Z =  9.0   N =    19   A = 18.998 g/mole
+         --->  Isotope: iso_9019   Z =  9   N =  19   A =  19.00 g/mole   abundance: 100.000 %
+          ElmMassFraction: 100.00 %  ElmAbundance 100.00 % 
+
+
+
+Checking overlaps for volume Sample:1 (G4Box) ... OK! 
+ Attaching biasing operator to logical volume Sample with biasFactor = 1000 in alpha
+ #### PROGRESS: 1810414/10000000 run histories have been computed (18.1041 %) in 1.01667 minutes (0.0169444 h) ---> (1.06844e+08 run histories/h) ####
+ #### Estimated time left to complete the job (/home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/F-19_t1.inp): 4.59899 minutes (0.0766499 h) ####
+ #### PROGRESS: 3626154/10000000 run histories have been computed (36.2615 %) in 2.01667 minutes (0.0336111 h) ---> (1.07886e+08 run histories/h) ####
+ #### Estimated time left to complete the job (/home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/F-19_t1.inp): 3.54478 minutes (0.0590797 h) ####
+ #### PROGRESS: 7253219/10000000 run histories have been computed (72.5322 %) in 4.01667 minutes (0.0669444 h) ---> (1.08347e+08 run histories/h) ####
+ #### Estimated time left to complete the job (/home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/F-19_t1.inp): 1.5211 minutes (0.0253517 h) ####
+ Job with input /home/nelson254/alphanso-analysis/SaG4n-timing/inputs/generated/F-19_t1.inp finished successfully after 333 seconds
+# === STDERR ===
+
