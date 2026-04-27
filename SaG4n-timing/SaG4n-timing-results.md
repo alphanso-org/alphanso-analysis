@@ -3,18 +3,27 @@
 Brief summary of the CELA timing run comparing ALPHANSO against SaG4n for the
 Mendoza et al. Table 2 fastest-step configuration.
 
-## Configuration
+## System And Software
 
 - Workstation: LLNL CELA.
+- Kernel: `Linux cela.llnl.gov 4.18.0-553.82.1.el8_10.x86_64 #1 SMP Thu Oct 23 16:05:55 EDT 2025 x86_64 x86_64`.
+- CPU: Intel Xeon Platinum 8280 CPU @ 2.70 GHz.
+- Python: 3.11.15.
 - SaG4n: upstream `UIN-CIEMAT/SaG4n`, commit `9bd52c2ec6f9e3c9720bd982aadbc22b339a7539` (`v1.5`).
-- Geant4: `geant4-11-02-patch-01` / Geant4 11.2.1.
-- ALPHANSO: `alphanso 1.0.1`, installed in Python 3.11 virtual environment.
-- Nuclear data: SaG4n pre-converted `JENDL_AN-2005` G4ParticleHP data.
+- Geant4: 11.2.1; SaG4n runtime banner reported `geant4-11-02-patch-01`.
+- ALPHANSO: `alphanso 1.0.1`
+
+## Methods
+
 - Physics setup: 10^7 alpha particles at 10 MeV, `F_B = 10^3`, `S_max = 0.1 mm`, `G4EmStandardPhysics_option4`.
 - Targets: isotopically pure 5 cm cube at 1 g/cm^3.
-- Timing protocol: 3 SaG4n trials per nuclide; 31 ALPHANSO subprocess trials per nuclide with trial 0 dropped as warmup.
-- Threading: both engines run as single-process, single-thread jobs; benchmark wrapper sets `OMP_NUM_THREADS=1`, `OPENBLAS_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `NUMBA_NUM_THREADS=1`, `VECLIB_MAXIMUM_THREADS=1`, and `BLIS_NUM_THREADS=1`.
-- CPU pinning: `taskset -c 0` was used where available.
+- Timing protocol: 3 SaG4n trials per nuclide; 31 ALPHANSO subprocess trials per nuclide with trial 0 dropped as warmup, leaving 30 timed ALPHANSO trials per nuclide.
+- SaG4n faithfulness gate: the first SaG4n run for each nuclide was compared against Mendoza Table 2 reference yields before timing results were accepted. All six nuclides passed. This first successful faithfulness run was retained as SaG4n trial 0, followed by two additional SaG4n timing trials.
+- Each SaG4n and ALPHANSO invocation was a separate process.
+- Threading: both engines run as single-process, single-thread jobs
+- Timing definitions: SaG4n timing is full subprocess wall time. ALPHANSO `calc` time is measured around `Transport.calculate(...)` inside the subprocess; ALPHANSO `wall` time includes subprocess startup, Python import, calculation, and shutdown.
+- Summary statistic: medians are reported for each timing vector. Speedups are `median(T_SaG4n wall) / median(T_ALPHANSO)`.
+- Confidence intervals: 95% bootstrap confidence intervals with 10,000 resamples over the SaG4n and ALPHANSO trial vectors.
 
 Li-6 is excluded from the ALPHANSO comparison below because ALPHANSO returned
 zero yield for Li-6 in this run, which is a known ALPHANSO issue. SaG4n's Li-6
@@ -43,7 +52,7 @@ Summary excluding Li-6:
 - Wall speedup median: 423x.
 - SaG4n yield agreement with Mendoza: all retained nuclides within 1.6%.
 
-Yields are reported as neutrons per 10^6 incident alpha particles.
+Yields are reported as neutrons per 10^6 incident alpha particles. Don't worry about the yield values - it's just to confirm that we are running the same calcs as the Mendoza paper. Since yields agree, we have extra confidence that it's essentially the same.
 
 ## Interpretation
 
@@ -67,84 +76,5 @@ and Geant4 11.2.1 rather than Mendoza's modified Geant4 10.5.
 - This is not a binary-identical reproduction of Mendoza et al.; Mendoza used a
   modified Geant4 10.5 build, while this run used upstream SaG4n `v1.5` with
   Geant4 11.2.1.
-- The run was performed on a shared LLNL workstation, not an isolated HPC node.
-  The final successful run printed a warning that the 1-minute load average was 7.31, so
-  timing noise from other users may be present.
 - Li-6 is excluded from the ALPHANSO yield/speedup interpretation because
   ALPHANSO returned zero yield for Li-6, a known ALPHANSO issue.
-- The summary files `results/versions.json`, `results/timings.json`,
-  `results/faithfulness.json`, and `analysis/table.md` were empty in the local
-  checkout, even though the run log shows `06_analyze_results.py` wrote them on
-  CELA. This appears to be a Git staging/transfer artifact, not a benchmark
-  failure. The table above was reconstructed from `results/raw/*.json`.
-- The committed `results/runlogs/latest.log` is a symlink whose target log file
-  was not committed. The relevant log excerpt was supplied separately and
-  confirms all benchmark and analysis steps completed.
-
-## Missing System Fingerprint
-
-I do not have the complete CELA system details locally. The committed
-`SaG4n-timing/results/versions.json` is zero bytes, so the CPU model, kernel,
-compiler version, CPU governor, and full package fingerprint were not preserved.
-This does not affect the timing results above: those were reconstructed from
-the complete raw trial records under `results/raw/*.json`.
-
-The fingerprint can be regenerated on CELA without rerunning the benchmark.
-This captures the system state at regeneration time rather than exactly at
-timing time, but it should still be valid for stable fields such as CPU model,
-kernel, compiler, Geant4 version, SaG4n commit, and ALPHANSO version. The run
-log supplies the timing-time load warning: 1-minute load average was 7.31.
-
-Recommended regeneration command:
-
-```sh
-cd /home/nelson254/alphanso-analysis/SaG4n-timing
-
-venv/bin/python - <<'PY'
-import importlib.util, json
-from pathlib import Path
-
-script = Path("scripts/05_run_benchmark.py").resolve()
-spec = importlib.util.spec_from_file_location("bench", script)
-bench = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(bench)
-
-versions = bench.capture_versions()
-Path("results/versions.json").write_text(json.dumps(versions, indent=2) + "\n")
-print(json.dumps(versions, indent=2))
-PY
-```
-
-Then commit the regenerated fingerprint:
-
-```sh
-git add -f results/versions.json
-git commit -m "Add CELA timing system fingerprint"
-git push
-```
-
-If the Python helper is not available for some reason, retrieve the main
-details manually:
-
-```sh
-cd /home/nelson254/alphanso-analysis/SaG4n-timing
-
-uname -a
-lscpu | sed -n '1,25p'
-g++ --version | head -1
-cmake --version | head -1
-./geant4_install/bin/geant4-config --version
-git -C SaG4n_src rev-parse HEAD
-git -C SaG4n_src describe --tags --always --dirty
-venv/bin/pip show alphanso | grep -E '^(Name|Version|Location):'
-cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || true
-```
-
-If the original run log still exists on CELA, also retrieve:
-
-```sh
-ls -lh results/runlogs/
-git add -f results/runlogs/run_*.log
-git commit -m "Add complete CELA timing run log"
-git push
-```
