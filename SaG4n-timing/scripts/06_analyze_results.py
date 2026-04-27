@@ -15,6 +15,7 @@ import json
 import statistics
 from pathlib import Path
 from typing import Any
+from json import JSONDecodeError
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR     = ROOT / "results" / "raw"
@@ -24,6 +25,17 @@ TIMINGS_OUT = ROOT / "results" / "timings.json"
 NUCLIDE_ORDER = ["Si-28", "Li-6", "N-14", "C-13", "F-19", "O-18"]
 WARMUP_TRIALS = 1   # drop the first ALPHANSO trial per nuclide
 N_BOOT        = 10000
+
+
+def load_optional_json(path: Path, default: Any) -> Any:
+    """Load JSON if present and non-empty; tolerate placeholder artifacts."""
+    if not path.is_file() or path.stat().st_size == 0:
+        return default
+    try:
+        return json.loads(path.read_text())
+    except JSONDecodeError as exc:
+        print(f"[06] WARNING: ignoring invalid JSON in {path}: {exc}")
+        return default
 
 
 def load_records() -> dict[str, dict[str, list[dict]]]:
@@ -359,10 +371,8 @@ def main() -> int:
     TIMINGS_OUT.write_text(json.dumps(agg, indent=2))
     print(f"[06] wrote {TIMINGS_OUT}")
 
-    versions_path = ROOT / "results" / "versions.json"
-    versions = json.loads(versions_path.read_text()) if versions_path.is_file() else {}
-    faith_path = ROOT / "results" / "faithfulness.json"
-    faith = json.loads(faith_path.read_text()) if faith_path.is_file() else None
+    versions = load_optional_json(ROOT / "results" / "versions.json", {})
+    faith = load_optional_json(ROOT / "results" / "faithfulness.json", None)
 
     write_table_md(agg, faith)
     write_speedup_pdf(agg)

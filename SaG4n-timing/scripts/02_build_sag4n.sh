@@ -89,9 +89,9 @@ if [[ ! -x "$BUILD_DIR/SaG4n" ]]; then
     exit 1
 fi
 
-# Smoke test: invoke the binary to confirm it loads and prints something sane.
-"$BUILD_DIR/SaG4n" --help 2>&1 | head -20 || \
-    "$BUILD_DIR/SaG4n" 2>&1 | head -20 || true
+# Do not invoke SaG4n here: it has no --help mode and treats every argument
+# as an input filename, producing a misleading parser error in successful runs.
+ldd "$BUILD_DIR/SaG4n" >/dev/null 2>&1 || true
 
 # Record commit info for results/versions.json. The benchmark harness will
 # also re-capture this, but stamping it here lets re-runs keep history.
