@@ -1,0 +1,6 @@
+{
+  "commit_sha": "9bd52c2ec6f9e3c9720bd982aadbc22b339a7539",
+  "describe": "v1.5",
+  "binary": "/home/nelson254/alphanso-analysis/SaG4n-timing/SaG4n_src/build/SaG4n",
+  "geant4_install": "/home/nelson254/alphanso-analysis/SaG4n-timing/geant4_install"
+}
