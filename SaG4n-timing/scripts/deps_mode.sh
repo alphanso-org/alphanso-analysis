@@ -8,6 +8,26 @@ use_system_deps() {
     esac
 }
 
+source_relaxed_nounset() {
+    local script_path="$1"
+    local had_nounset=0
+
+    if [[ $- == *u* ]]; then
+        had_nounset=1
+        set +u
+    fi
+
+    # shellcheck disable=SC1090
+    source "$script_path"
+    local rc=$?
+
+    if (( had_nounset )); then
+        set -u
+    fi
+
+    return "$rc"
+}
+
 benchmark_python() {
     local root_dir="$1"
 
@@ -33,4 +53,35 @@ benchmark_python() {
             printf '%s\n' "python3"
         fi
     fi
+}
+
+activate_conda_env() {
+    local root_dir="$1"
+    local env_dir="$2"
+    local had_nounset=0
+
+    # Conda activation scripts, including gcc_linux-64 hooks, may reference
+    # variables before defining them. That is incompatible with `set -u`.
+    if [[ $- == *u* ]]; then
+        had_nounset=1
+        set +u
+    fi
+
+    local activated=1
+    local try
+    for try in "$env_dir" "$root_dir/miniconda" "$HOME/miniconda3" "$HOME/miniconda" "$HOME/anaconda3"; do
+        if [[ -f "$try/etc/profile.d/conda.sh" ]]; then
+            # shellcheck disable=SC1091
+            if source "$try/etc/profile.d/conda.sh" && conda activate "$env_dir"; then
+                activated=0
+                break
+            fi
+        fi
+    done
+
+    if (( had_nounset )); then
+        set -u
+    fi
+
+    return "$activated"
 }

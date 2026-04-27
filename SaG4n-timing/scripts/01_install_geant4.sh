@@ -32,16 +32,10 @@ if use_system_deps; then
     echo "[01] USE_SYSTEM_DEPS=1: using system CMake/compiler/libraries."
 else
     # Activate conda env to get compiler wrappers and dependency headers.
-    # shellcheck disable=SC1091
-    source "$(dirname "$(readlink -f "$ENV_DIR/bin/conda" 2>/dev/null || echo "$ENV_DIR/bin/python")")/../etc/profile.d/conda.sh" 2>/dev/null || true
-    for try in "$ENV_DIR" "$ROOT_DIR/miniconda" "$HOME/miniconda3" "$HOME/anaconda3"; do
-        if [[ -f "$try/etc/profile.d/conda.sh" ]]; then
-            # shellcheck disable=SC1091
-            source "$try/etc/profile.d/conda.sh"
-            conda activate "$ENV_DIR"
-            break
-        fi
-    done
+    activate_conda_env "$ROOT_DIR" "$ENV_DIR" || {
+        echo "[01] ERROR: could not activate conda env at $ENV_DIR." >&2
+        exit 1
+    }
 fi
 
 # Sanity: cmake and a C++ compiler must now be on PATH.

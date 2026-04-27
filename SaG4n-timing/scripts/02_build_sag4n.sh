@@ -60,17 +60,12 @@ else
         echo "[02] ERROR: conda env missing. Run scripts/00_install_conda_deps.sh first." >&2
         exit 1
     fi
-    for try in "$ROOT_DIR/miniconda" "$HOME/miniconda3" "$HOME/anaconda3"; do
-        if [[ -f "$try/etc/profile.d/conda.sh" ]]; then
-            # shellcheck disable=SC1091
-            source "$try/etc/profile.d/conda.sh"
-            conda activate "$ENV_DIR"
-            break
-        fi
-    done
+    activate_conda_env "$ROOT_DIR" "$ENV_DIR" || {
+        echo "[02] ERROR: could not activate conda env at $ENV_DIR." >&2
+        exit 1
+    }
 fi
-# shellcheck disable=SC1091
-source "$G4_INSTALL/bin/geant4.sh"
+source_relaxed_nounset "$G4_INSTALL/bin/geant4.sh"
 
 if [[ -x "$BUILD_DIR/SaG4n" && -f "$BUILD_STAMP" ]] && [[ "$(cat "$BUILD_STAMP")" != "$COMMIT_SHA" ]]; then
     echo "[02] Existing build was for a different SaG4n commit; rebuilding."
