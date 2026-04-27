@@ -1,0 +1,83 @@
+{
+  "source": "Mendoza et al., NIM A 960 (2020) 163659, Table 2",
+  "doi": "10.1016/j.nima.2020.163659",
+  "config": {
+    "n_primaries": 10000000,
+    "alpha_energy_mev": 10.0,
+    "bias_factor": 1000,
+    "smax_mm": 0.1,
+    "smax_cm": 0.01,
+    "physics_list": "G4EmStandardPhysics_option4",
+    "nuclear_data": "JENDL/AN-2005",
+    "mendoza_cpu": "Intel Xeon Gold 6148 @ 2.4 GHz"
+  },
+  "nuclides": [
+    {
+      "label": "Si-28",
+      "Z": 14,
+      "A": 28,
+      "t_mendoza_s": 270.0,
+      "y_over_yr": 1.01,
+      "y_over_yr_unc": 0.03,
+      "y_expected_per_million_alpha": 0.1268,
+      "y_expected_source": "Mendoza Table 1 row F_B=10^3 (Y=0.1268) × Y/Yr@10^-1 mm (1.01) / Y/Yr@10^-4 mm (1.01) = 0.1268",
+      "y_tolerance_relative": 0.05
+    },
+    {
+      "label": "Li-6",
+      "Z": 3,
+      "A": 6,
+      "t_mendoza_s": 260.0,
+      "y_over_yr": 1.002,
+      "y_over_yr_unc": 0.002,
+      "y_expected_per_million_alpha": 22.22,
+      "y_expected_source": "Table 1 F_B=10^3 Y=22.22 × 1.002/1.002 = 22.22",
+      "y_tolerance_relative": 0.05
+    },
+    {
+      "label": "N-14",
+      "Z": 7,
+      "A": 14,
+      "t_mendoza_s": 260.0,
+      "y_over_yr": 0.883,
+      "y_over_yr_unc": 0.002,
+      "y_expected_per_million_alpha": 23.37,
+      "y_expected_source": "Table 1 F_B=10^3 Y=26.47 × 0.883/1.000 = 23.37",
+      "y_tolerance_relative": 0.15,
+      "note": "Mendoza documents up to 12% step-size deviation for N-14; tolerance widened to 15%."
+    },
+    {
+      "label": "C-13",
+      "Z": 6,
+      "A": 13,
+      "t_mendoza_s": 350.0,
+      "y_over_yr": 0.981,
+      "y_over_yr_unc": 0.001,
+      "y_expected_per_million_alpha": 107.56,
+      "y_expected_source": "Table 1 F_B=10^3 Y=109.2 × 0.981/0.996 = 107.56",
+      "y_tolerance_relative": 0.05
+    },
+    {
+      "label": "F-19",
+      "Z": 9,
+      "A": 19,
+      "t_mendoza_s": 440.0,
+      "y_over_yr": 1.001,
+      "y_over_yr_unc": 0.001,
+      "y_expected_per_million_alpha": 116.55,
+      "y_expected_source": "Table 1 F_B=10^3 Y=116.2 × 1.001/0.998 = 116.55",
+      "y_tolerance_relative": 0.05
+    },
+    {
+      "label": "O-18",
+      "Z": 8,
+      "A": 18,
+      "t_mendoza_s": 380.0,
+      "y_over_yr": 0.9971,
+      "y_over_yr_unc": 0.0007,
+      "y_expected_per_million_alpha": 212.21,
+      "y_expected_source": "Table 1 F_B=10^3 Y=212.4 × 0.9971/0.9980 = 212.21",
+      "y_tolerance_relative": 0.05
+    }
+  ]
+}

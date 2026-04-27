@@ -1,0 +1,33 @@
+# Build / install artifacts
+geant4_install/
+geant4-v*/
+SaG4n_src/
+venv/
+conda_env/
+miniconda/
+nuclear_data/
+
+# Generated inputs and runtime outputs
+inputs/generated/
+results/raw/
+results/versions.json
+results/timings.json
+results/faithfulness.json
+results/pip_freeze.txt
+results/nuclear_data.env
+results/run.pid
+results/runlogs/
+
+# Analysis outputs (regenerated; commit these manually if desired)
+analysis/table.md
+analysis/speedup.pdf
+analysis/methods_section.md
+
+# Local source PDF; reference values are transcribed in docs/
+mendoza 2020 geant.pdf
+
+# Editor / OS
+*.swp
+.DS_Store
+__pycache__/
+*.pyc

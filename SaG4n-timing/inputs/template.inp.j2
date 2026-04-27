@@ -1,0 +1,47 @@
+{# SaG4n input file (.inp) — Mendoza Table 2 reproduction.
+   Modeled after upstream inputs/examples/beam/beam01.inp.
+   Format rules verified against src/SaG4nInputManager.cc:
+     - flat keywords; single trailing END terminates the file
+     - all length values are interpreted in cm (parser multiplies by `cm`)
+     - VOLUME and MATERIAL are indexed by an integer ID, not a section block
+     - SOURCE PostType -1 = monoenergetic beam
+     - one integer SEED, not two
+     - OUTPUTFILE has no extension; SaG4n appends .txt or .root by format
+     - OUTPUTTYPE: <type1> <type2> <format>
+         type1=1 → write yield/spectra
+         type2=0 → no per-event neutron listing (we don't need it)
+         format=1 → ASCII .txt (parser-friendly)
+     - There is NO PHYSICSLIST keyword. The physics list is selected in
+       the SaG4n_src binary at compile time (G4EmStandardPhysics_option4).
+   Unused-but-required keywords are kept minimal. #}
+
+WORLDSIZE 1000
+
+# A 5x5x5 cm box centered at origin. The source starts at the center and
+# the box is many alpha ranges thick, so all alphas stop inside the material.
+VOLUME 1 Sample 1 2 0 - 5 5 5 0 0 0
+
+# Isotopically pure target. Density (g/cm^3) is what SaG4n passes to
+# the stopping-power calculation. We use 1 g/cm^3 for all monoisotopic
+# targets to match the style of upstream SaG4n examples and avoid arbitrary
+# gas/liquid phase choices; thick-target yields are density independent.
+MATERIAL 1 {{ label }} {{ "%.3f" | format(density_g_cm3) }} 1
+{{ "%d%03d" | format(Z, A) }} 1.0
+ENDMATERIAL
+
+# Beam: PostType=-1, origin at (0,0,0), direction +z, radius 0, sigma 0.
+# Source intensity: 1 alpha per primary, energy E_alpha (MeV), no spread.
+SOURCE -1 0 0 0 0 0 1 0 0
+1.00 1
+Alpha{{ "%.0f" | format(E_alpha_MeV) }}MeV {{ "%.1f" | format(E_alpha_MeV) }} 1 0
+ENDSOURCE
+
+MAXSTEPSIZE {{ "%.4f" | format(smax_cm) }}
+BIASFACTOR {{ F_B }}
+
+NEVENTS {{ n_events }}
+OUTPUTFILE {{ output_stem }}
+OUTPUTTYPE 1 0 1
+SEED {{ seed }}
+
+END
