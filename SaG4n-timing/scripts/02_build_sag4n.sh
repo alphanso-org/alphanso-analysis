@@ -14,6 +14,8 @@ BUILD_DIR="$SRC_DIR/build"
 SAG4N_REPO="${SAG4N_REPO:-https://github.com/UIN-CIEMAT/SaG4n.git}"
 SAG4N_REF="${SAG4N_REF:-9bd52c2ec6f9e3c9720bd982aadbc22b339a7539}"
 BUILD_STAMP="$BUILD_DIR/.sag4n_commit"
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/build_jobs.sh"
 
 if [[ -x "$BUILD_DIR/SaG4n" ]]; then
     echo "[02] SaG4n already built at $BUILD_DIR/SaG4n — verifying clean tree."
@@ -68,8 +70,10 @@ if [[ ! -x "$BUILD_DIR/SaG4n" ]]; then
     cd "$BUILD_DIR"
     echo "[02] Configuring SaG4n with cmake ..."
     cmake ..
-    echo "[02] Building SaG4n ..."
-    make -j"$(nproc)"
+    BUILD_JOBS_RESOLVED="$(resolve_build_jobs)"
+    CPU_COUNT="$(detect_cpu_count)"
+    echo "[02] Building SaG4n with $BUILD_JOBS_RESOLVED parallel jobs (20% cap of $CPU_COUNT visible CPUs) ..."
+    make -j"$BUILD_JOBS_RESOLVED"
     printf '%s\n' "$COMMIT_SHA" > "$BUILD_STAMP"
 fi
 

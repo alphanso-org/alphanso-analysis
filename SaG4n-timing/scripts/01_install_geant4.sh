@@ -10,6 +10,8 @@ ROOT_DIR="$(pwd)"
 ENV_DIR="$ROOT_DIR/conda_env"
 INSTALL_DIR="$ROOT_DIR/geant4_install"
 SRC_DIR="$ROOT_DIR/geant4_src"
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/build_jobs.sh"
 
 if [[ -x "$INSTALL_DIR/bin/geant4-config" ]]; then
     echo "[01] GEANT4 already installed at $INSTALL_DIR — skipping."
@@ -84,8 +86,10 @@ cmake -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
       -DCMAKE_BUILD_TYPE=Release \
       "$SRC_DIR/geant4-v${VERSION}"
 
-echo "[01] Building (this takes 30-60 min) ..."
-make -j"$(nproc)"
+BUILD_JOBS_RESOLVED="$(resolve_build_jobs)"
+CPU_COUNT="$(detect_cpu_count)"
+echo "[01] Building with $BUILD_JOBS_RESOLVED parallel jobs (20% cap of $CPU_COUNT visible CPUs) ..."
+make -j"$BUILD_JOBS_RESOLVED"
 make install
 
 echo "[01] GEANT4 installed at $INSTALL_DIR"

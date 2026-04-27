@@ -38,14 +38,17 @@ Final outputs land in:
 - Either an existing miniconda/anaconda install in `~`, or just internet
   access (the script bootstraps Miniconda into `./miniconda/` if absent).
 - **No sudo required.** If something asks for it, that's a bug — file it.
+- Build parallelism is capped to 20% of visible CPUs by default
+  (`floor(nproc/5)`, minimum 1). To be even more conservative, set
+  `BUILD_JOBS=<lower-number>` before running `./run.sh`.
 
 ## Steps in order (each is independently re-runnable)
 
 | # | Script | Purpose | Wall |
 |---|---|---|---|
 | 0 | `scripts/00_install_conda_deps.sh` | conda env @ `./conda_env/` (cmake, gcc, xerces-c, ROOT, python) | ~10 min |
-| 1 | `scripts/01_install_geant4.sh` | GEANT4 11.2.1 source build to `./geant4_install/` | 30–60 min |
-| 2 | `scripts/02_build_sag4n.sh` | clone github.com/UIN-CIEMAT/SaG4n, build, refuse if dirty | ~5 min |
+| 1 | `scripts/01_install_geant4.sh` | GEANT4 11.2.1 source build to `./geant4_install/` using at most 20% of CPUs | 30–60 min |
+| 2 | `scripts/02_build_sag4n.sh` | clone github.com/UIN-CIEMAT/SaG4n, build using at most 20% of CPUs, refuse if dirty | ~5 min |
 | 3 | `scripts/03_install_alphanso.sh` | venv + `pip install alphanso` | ~2 min |
 | 4 | `scripts/04_setup_nuclear_data.sh` | download converted JENDL/AN-2005, write `G4PARTICLEHPDATA` | ~1 min |
 | 5 | `scripts/05_run_benchmark.py` | faithfulness + 3×SaG4n + 31×ALPHANSO per nuclide | ~2 hours |
