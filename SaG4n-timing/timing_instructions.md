@@ -129,8 +129,10 @@ to discard local changes, or delete `SaG4n_src/` and let step 02 re-clone.
 **SaG4n input syntax mismatch.** The `inputs/template.inp.j2` is modeled on
 the upstream `inputs/examples/beam/beam01.inp` and uses the actual flat-keyword
 format (verified against `src/SaG4nInputManager.cc`: lengths in cm, single
-`SEED` int, single trailing `END`, no `PHYSICSLIST` keyword). If SaG4n still
-errors during parse, diff your generated `.inp` against
+`SEED` int, no `PHYSICSLIST` keyword). The generated input intentionally keeps
+an unread comment after `END` because SaG4n checks stream state after seeing
+`END` and can fail if `END` is the final token at EOF. If SaG4n still errors
+during parse, diff your generated `.inp` against
 `SaG4n_src/inputs/examples/beam/beam01.inp` to find the regression.
 
 **`G4PARTICLEHPDATA` complaint at runtime.** Step 04 downloads the SaG4n

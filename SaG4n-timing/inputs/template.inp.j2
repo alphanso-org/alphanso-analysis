@@ -1,7 +1,9 @@
 {# SaG4n input file (.inp) — Mendoza Table 2 reproduction.
    Modeled after upstream inputs/examples/beam/beam01.inp.
    Format rules verified against src/SaG4nInputManager.cc:
-     - flat keywords; single trailing END terminates the file
+     - flat keywords; END terminates the file
+     - keep an unread token after END; SaG4n checks stream.good() after
+       seeing END and can fail if END is the final token at EOF
      - all length values are interpreted in cm (parser multiplies by `cm`)
      - VOLUME and MATERIAL are indexed by an integer ID, not a section block
      - SOURCE PostType -1 = monoenergetic beam
@@ -45,3 +47,5 @@ OUTPUTTYPE 1 0 1
 SEED {{ seed }}
 
 END
+
+# EOF sentinel: unread by SaG4n because parsing stops at END.

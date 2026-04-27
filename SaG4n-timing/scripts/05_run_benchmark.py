@@ -102,6 +102,8 @@ def render_inp(nuc: dict, out_path: Path, output_stem: Path, seed: int) -> None:
         output_stem    = str(output_stem),    # without extension
         seed           = seed,
     )
+    if not rendered.endswith("\n"):
+        rendered += "\n"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(rendered)
 
