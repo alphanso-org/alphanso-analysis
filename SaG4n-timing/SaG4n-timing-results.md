@@ -75,6 +75,7 @@ and Geant4 11.2.1 rather than Mendoza's modified Geant4 10.5.
 
 - This is not a binary-identical reproduction of Mendoza et al.; Mendoza used a
   modified Geant4 10.5 build, while this run used upstream SaG4n `v1.5` with
-  Geant4 11.2.1.
-- Li-6 is excluded from the ALPHANSO yield/speedup interpretation because
-  ALPHANSO returned zero yield for Li-6, a known ALPHANSO issue.
+    Geant4 11.2.1.
+    - Li-6 is excluded from the ALPHANSO yield/speedup interpretation because
+      ALPHANSO returned zero yield for Li-6, a known ALPHANSO issue.
+      
